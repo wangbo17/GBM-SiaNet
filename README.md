@@ -14,7 +14,7 @@
 
 ## 🧠 Background
 
-Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after standard treatment. Standard of care includes maximal surgical resection followed by radiotherapy with concurrent and adjuvant temozolomide chemotherapy. However, progression-free survival remains poor, with recurrence typically occurring 6 to 9 months post-therapy. Current evidence suggests that treatment resistance may not be a consequence of somatic genomic alterations, shifting the research focus towards understanding the role of transcriptional heterogeneity.
+Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after standard treatment. Current evidence suggests that treatment resistance may not be a consequence of somatic genomic alterations, shifting the research focus towards understanding the role of transcriptional heterogeneity.
 
 ## ⚙️ Methods and Objectives
 
