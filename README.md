@@ -18,8 +18,6 @@ Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after sta
 
 ## ⚙️ Methods and Objectives
 
-This study developed a classifier based on longitudinal gene expression data to accurately differentiate between primary and recurrent GBM samples. iML methods were applied to the best-performing model to identify the genes most critical for classification. The biological functions of these key genes were subsequently investigated using bioinformatics approaches. 
-
 **Hypotheses**
 
 - Recurrent GBMs show distinct gene expression patterns compared to primary GBMs.
