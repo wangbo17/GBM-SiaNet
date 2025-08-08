@@ -14,7 +14,7 @@
 
 ## 🧠 Background
 
-Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after standard treatment. Recurrence typically occurs within 6–9 months, with a median post-recurrence survival time of only 3–9 months. Current evidence suggests that treatment resistance may not be a consequence of somatic genomic alterations, shifting the research focus towards understanding the role of transcriptional heterogeneity. Machine learning (ML), particularly interpretable ML (iML), offers a promising approach to uncover transcriptional drivers of therapy resistance.
+Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after standard treatment. Recurrence typically occurs within 6–9 months, with a median post-recurrence survival time of only 3–9 months. Current evidence suggests that treatment resistance may not be a consequence of somatic genomic alterations, shifting the research focus towards understanding the role of transcriptional heterogeneity.
 
 ## ⚙️ Methods and Objectives
 
@@ -34,8 +34,8 @@ Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after sta
 
 **Data Collection**
 
-- RNA-seq data was obtained from longitudinally matched GBM tumour samples, collected from two surgical performed on the same patients.
-- Patients underwent initial resection of primary tumours followed by standard treatment; recurrent tumours were resected upon recurrence.
+- RNA-seq data was obtained from longitudinally matched tumour samples, collected from two surgical performed on the same patients.
+- Patients underwent resection of primary tumours followed by standard treatment; recurrent tumours were resected upon recurrence.
 
 **Selection Criteria**
 
@@ -71,7 +71,7 @@ Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after sta
 
 ## 📋 Feature Selection
 
-A combined feature selection strategy was implemented by integrating two filter-based methods. Each algorithm was independently applied to rank features on the training set. The top 100 to 500 features (in increments of 100) from each were merged to generate multiple integrated feature sets.
+A combined feature selection strategy was implemented by integrating two filter-based methods. Each algorithm was independently applied to rank features on the training set. Top 100 to 500 features from each were merged to generate multiple integrated feature sets.
 
 **Minimum Redundancy Maximum Relevance (mRMR) Algorithm** (Ding and Peng, 2005)
 
@@ -83,11 +83,11 @@ A combined feature selection strategy was implemented by integrating two filter-
 - Captures feature interactions by ranking features by differences between neighbouring samples.
 - Limitation: Less efficient at reducing redundancy.
 
-<img width="462" height="255" alt="F0" src="https://github.com/user-attachments/assets/84de1fff-7174-4211-a8bf-6c54c21fd420" />
-
-**Figure 1. Combined Feature Sets Selected by mRMR and Relief Algorithms.**
-
-
+<p align="center">
+  <img height="300" alt="F0" src="https://github.com/user-attachments/assets/84de1fff-7174-4211-a8bf-6c54c21fd420" />
+  <br>
+  <strong>Figure 1. Combined Feature Sets Selected by mRMR and Relief Algorithms.</strong>
+</p>
 
 ## 📈 Model Development
 
@@ -105,43 +105,55 @@ To establish baseline performance, three traditional machine learning models wer
 
 The models were then evaluated on the test set using feature sets of varying sizes. Among them, SVM consistently achieved the highest accuracy, particularly with the top 300 combined features.
 
-<img width="1390" height="577" alt="F2" src="https://github.com/user-attachments/assets/267d3e32-41b4-46ac-bdaf-52df38332d51" />
+<p align="center">
+  <img height="350" alt="F2" src="https://github.com/user-attachments/assets/267d3e32-41b4-46ac-bdaf-52df38332d51" />
+  <br>
+  <strong>Figure 2. Performance of ML Models with Combined Feature Sets on the Test Set.</strong>
+</p>
 
-**Figure 2. Performance of ML Models with Combined Feature Sets on the Test Set.**
-
-⚠️ *While effective, these models do not account for the paired structure or batch effects, and their failure to capture key patterns limits interpretability.*
+⚠️ *These models do not account for the paired structure or batch effects, and their failure to capture key patterns limits interpretability.*
 
 ### Siamese Neural Network-Based Hybrid Models
 
 To address these limitations, a Siamese Neural Network (SNN) was developed to distinguish between primary and recurrent GBM samples by mapping them into a common feature space. The SNN consists of  three identical neural networks to process three inputs sample at the same time: anchor, positive, and negative. In this study, the anchor could be either a primary or recurrent tumour, with the negative sample being the other tumour class as the anchor from the same patient. The positive sample should be the same tumour class as the anchor but from a different patient within the same centre. The training objective was to maximize the distance between samples of different classes from the same patients and minimize the distance between samples of the same class from different patients within the same centre. This design enables the model to capture the key differences and similarities between matched tumour samples, while accounting for centre-specific batch effects by comparing samples within each centre.
 
-<img width="4335" height="1943" alt="F3" src="https://github.com/user-attachments/assets/16c234bb-6422-4caa-900d-71a8e6490c0c" />
-
-**Figure 3. Objective of the Siamese Neural Network (SNN).**
+<p align="center">
+  <img height="400" alt="F3" src="https://github.com/user-attachments/assets/16c234bb-6422-4caa-900d-71a8e6490c0c" />
+  <br>
+  <strong>Figure 3. Objective of the Siamese Neural Network (SNN).</strong>
+</p>
 
 Given the one-dimensional nature of bulk RNA-seq data, a Fully Connected Network (FCN) was selected as the sub-network architecture. The FCN includes three fully connected layers, each followed by batch normalization, ReLU activation, and dropout layers. He initialization was used for each dense layer, with L2 regularization applied to reduce the risk of overfitting.
 
-<img width="4262" height="1925" alt="F4" src="https://github.com/user-attachments/assets/25f016ef-4807-4153-aada-e27a76f878d6" />
-
-**Figure 4. Architecture of the Siamese Neural Network (SNN).**
+<p align="center">
+  <img height="400" alt="F4" src="https://github.com/user-attachments/assets/25f016ef-4807-4153-aada-e27a76f878d6" />
+  <br>
+  <strong>Figure 4. Architecture of the Siamese Neural Network (SNN).</strong>
+</p>
 
 The core of the learning process is the triplet loss function, which compares the anchor with positive and negative samples based on their Euclidean distances. The function ensures that the negative is farther from the anchor than the positive by a certain margin, allowing same-type samples to cluster together while different ones are separated. However, it has a limitation: once the negative distance is far enough from the positive distance, the loss becomes zero, and the model stops learning. To optimise this, the study used a modified triplet loss function, replacing the Max function with the SoftPlus function. SoftPlus is a smooth approximation of Max function and continues to contribute to the loss even when the margin is satisfied. This enables smoothly continuous separation between primary and recurrent GBM, making it highly effective for the binary classification task.
 
-<img width="4693" height="1329" alt="F5" src="https://github.com/user-attachments/assets/877b63f2-36f7-476c-94fa-cd29dc42972d" />
-
-**Figure 5. Comparison Between Standard and SoftPlus-Modified Triplet Loss.**
+<p align="center">
+  <img height="300" alt="F5" src="https://github.com/user-attachments/assets/d5456f34-9c2b-47a0-8a53-cb4c76c72d11" />
+  <br>
+  <strong>Figure 5. Comparison Between Standard and SoftPlus-Modified Triplet Loss.</strong>
+</p>
 
 SNN was developed using the top 300 combined feature set, selected for their strong performance in traditional ML models. Due to time limitations, only this feature set was used, although ideally, all combined sets would have been explored. Optimal hyperparameters were identified through 5-fold cross-validation, achieving an average accuracy of 0.895 in distinguishing between positive and negative samples in each triplet from the validation subsets. The final model was trained on 3,368 triplets from the training subset, with 168 triplets used for validation. t-SNE showed a clear separation of primary and recurrent samples in the shared feature space, significantly improving compared to the raw input data, but there is still room for improvement.
 
-<img width="1219" height="1112" alt="F6" src="https://github.com/user-attachments/assets/c0d2710c-a98f-458a-ac45-3f57858dbf46" />
-
-**Figure 6. t-SNE Visualization of Feature Spaces Before and After SNN Transformation.** 
+<p align="center">
+  <img height="600" alt="F6" src="https://github.com/user-attachments/assets/c0d2710c-a98f-458a-ac45-3f57858dbf46" />
+  <br>
+  <strong>Figure 6. t-SNE Visualization of Feature Spaces Before and After SNN Transformation.</strong>
+</p>
 
 Building on the feature space created by the SNN, traditional ML models were used to create hybrid models for further classification. In these hybrid models, the SNN acted as a feature extractor, producing representations that were then fed into traditional ML models for final classification. After optimizing the models through cross-validation, the final models were trained on the full training set and evaluated on the test set. These hybrid models consistently performed better than traditional ML models, with the SNN-LR achieving the best performance, showing an accuracy of 0.90.
 
-<img width="3309" height="1475" alt="F7" src="https://github.com/user-attachments/assets/f0787aec-27ab-4009-8fcf-72c0c3f17f94" />
-
-**Figure 7. Performance Comparison of SNN-Based Hybrid and Traditional ML Models on the Test Set.** 
+<p align="center">
+  <img height="325" alt="F7" src="https://github.com/user-attachments/assets/f0787aec-27ab-4009-8fcf-72c0c3f17f94" />
+  <br>
+  <strong>Figure 7. Performance Comparison of SNN-Based Hybrid and Traditional ML Models on the Test Set.</strong>
+</p>
 
 ## 🔎 Model Interpretation
 
@@ -149,9 +161,11 @@ Building on the feature space created by the SNN, traditional ML models were use
 
 To identify the most critical genes involved in classification, SHAP analysis was used to interpret the decision-making process of the best-performing model, SNN-LR. SHAP values quantify each feature's contribution to the model's predictions. Positive SHAP values suggest a push towards recurrent GBM, while negative values suggest a push towards primary GBM. The colour bar represents gene expression levels, with red indicating high expression and blue indicating low expression. For example, lower expression levels of genes like MAG are linked with recurrent samples, while higher expression levels of genes like HOTAIR are linked with recurrent samples.
 
-<img width="2374" height="1595" alt="F8" src="https://github.com/user-attachments/assets/2cbdb0a0-a418-40e2-ae36-d403f278f94e" />
-
-**Figure 8. SHAP Summary Plot of the 20 Most Influential Features.** 
+<p align="center">
+  <img width="650" height="1595" alt="F8" src="https://github.com/user-attachments/assets/2cbdb0a0-a418-40e2-ae36-d403f278f94e" />
+  <br>
+  <strong>Figure 8. SHAP Summary Plot of the 20 Most Influential Features.</strong>
+</p>
 
 A literature search was conducted focusing on these 20 genes in the context of GBM recurrence and therapy resistance. The search confirmed that several of these genes are known to be associated with therapy resistance in GBM. Also, these genes are associated with drug resistance in other cancers, although their roles in GBM are not yet described. While these genes are typically involved in neural integrity and signalling, their roles in GBM are less clear. However, studies suggest that GBM's interaction with neural circuits may worsen tumour growth and affect survival. The study also identified novel genes which could lead to further research on GBM recurrence and therapy resistance.
 
@@ -187,27 +201,35 @@ A literature search was conducted focusing on these 20 genes in the context of G
 
 Differential Gene Expression (DGE) analysis was conducted using DESeq2 with a paired design to identify genes with significantly different expression levels between primary and matched recurrent GBM samples. Genes were filtered to include only those that were expressed in at least 50% of samples from either primary or recurrent. The analysis revealed 839 Differentially Expressed Genes (DEGs), with 601 upregulated and 238 downregulated. The DGE analysis results were then compared with SHAP results, leading to some interesting findings. Although most genes showed strong agreement between these two methods, some differences were noted. For example, MAG and MYRF had higher expression in recurrent samples according to DGE, but SHAP results linked their increased expression to primary GBM. Therefore, the predicted sample types based on the expression patterns of certain key genes sometimes did not match the actual types.
 
-<img width="1176" height="815" alt="F9" src="https://github.com/user-attachments/assets/efc191a5-b7c4-4490-ba6d-50a1667a822f" />
-
-**Figure 9. Volcano Plot of Differential Gene Expression (DGE) Analysis Between Primary and Recurrent GBM Samples.** 
+<p align="center">
+  <img height="400" alt="F9" src="https://github.com/user-attachments/assets/efc191a5-b7c4-4490-ba6d-50a1667a822f" />
+  <br>
+  <strong>Figure 9. Volcano Plot of Differential Gene Expression (DGE) Analysis Between Primary and Recurrent GBM Samples.</strong>
+</p>
 
 Further per-sample analysis showed variability in SHAP values for these two genes across individual samples. In these two plots, each point represents a sample, with quadrants indicating different predictive tendencies: the top-right area with positive SHAP values suggests a bias towards predicting recurrent GBM, while the bottom-left quadrant with negative SHAP values suggests a bias towards predicting primary GBM. Notably, for primary GBM samples, SHAP values often incorrectly suggested a recurrent classification, while in recurrent GBM samples, about 50% correctly suggested recurrence GBM, with the rest incorrectly suggesting primary GBM. These findings suggest that the roles of these genes in GBM recurrence and therapy resistance may differ among individuals, indicating that patient stratification could be necessary. However, it is important to note that while SHAP effectively captures feature interactions, but it assumes that features are independent. When features are highly correlated, this assumption may lead to misleading interpretations.
 
-<img width="2401" height="1306" alt="F10" src="https://github.com/user-attachments/assets/669b2281-f9c8-42e4-9001-0031f64df357" />
+<p align="center">
+  <img height="325" alt="F10" src="https://github.com/user-attachments/assets/669b2281-f9c8-42e4-9001-0031f64df357" />
+  <br>
+  <strong>Figure 10. SHAP Value Scatter Plot for MAG and MYRF Genes.</strong>
+</p>
 
-**Figure 10. SHAP Value Scatter Plot for MAG and MYRF Genes.** 
-
-<img width="1115" height="935" alt="F11" src="https://github.com/user-attachments/assets/c88f3c54-f7a7-4e55-bf62-9685f78aa34a" />
-
-**Figure 11. Correlation Plot for the 20 Most Influential Features Identified by SHAP Analysis.** 
+<p align="center">
+  <img height="575" alt="F11" src="https://github.com/user-attachments/assets/c88f3c54-f7a7-4e55-bf62-9685f78aa34a" />
+  <br>
+  <strong>Figure 11. Correlation Plot for the 20 Most Influential Features Identified by SHAP Analysis.</strong>
+</p>
 
 ### Pathway and Functional Enrichment Analysis
 
 The resulting DEGs were analysed with Gene Set Enrichment Analysis (GSEA) to identify enriched pathways associated with GBM recurrence and therapy resistance. This analysis identified significant upregulation in pathways related to neurotransmitter signalling and synaptic transmission, consistent with the top genes identified through SHAP analysis. This further supports the idea that GBM cells might integrate into neural circuits, promoting tumour growth and therapy resistance. In contrast, pathways associated with cell cycle regulation were downregulated, potentially allowing tumour cells to survive and grow despite treatment.
 
-<img width="1344" height="1060" alt="F12" src="https://github.com/user-attachments/assets/d67c70b6-5377-4449-b63c-e511cfdc643a" />
-
-**Figure 12. GSEA of DEGs Between Primary and Recurrent GBM Samples.** 
+<p align="center">
+  <img height="600" alt="F12" src="https://github.com/user-attachments/assets/d67c70b6-5377-4449-b63c-e511cfdc643a" />
+  <br>
+  <strong>Figure 12. GSEA of DEGs Between Primary and Recurrent GBM Samples.</strong>
+</p>
 
 Over-Representation Analysis (ORA) was conducted to determine whether the key genes identified by SHAP were significantly enriched in specific gene sets, using an adjusted p-value threshold of < 0.01. This analysis identified significant enrichment in the 'Glial Cell Differentiation' pathway and pathways related to oligodendrocytes (OLs), which are cells in the central nervous system that form the myelin sheath. This suggests that OLs and their precursor cells may interact with the tumour, affecting cancer progression. Additionally, a gene set associated with quiescent neural stem cells (NSCs) was enriched, indicating that GBM cells might use these quiescent mechanisms to survive therapy and promote recurrence. These findings highlight the complex interactions between GBM and its microenvironment, particularly involving OLs and quiescent NSCs, which may help the tumour escape therapies and contribute to recurrence.
 
