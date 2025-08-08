@@ -34,8 +34,8 @@ Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after sta
 
 **Data Collection**
 
-- RNA-seq data was obtained from longitudinally matched tumour samples, collected from two surgical performed on the same patients.
-- Patients underwent resection of primary tumours followed by standard treatment; recurrent tumours were resected upon recurrence.
+- RNA-seq data was obtained from longitudinally matched GBM tumour samples, collected from two surgical performed on the same patients.
+- Patients underwent initial resection of primary tumours followed by standard treatment; recurrent tumours were resected upon recurrence.
 
 **Selection Criteria**
 
@@ -71,7 +71,7 @@ Glioblastoma (GBM) is an incurable brain cancer, with fatal recurrence after sta
 
 ## 📋 Feature Selection
 
-A combined feature selection strategy was implemented by integrating two filter-based methods. Each algorithm was independently applied to rank features on the training set. Top 100 to 500 features from each were merged to generate multiple integrated feature sets.
+A combined feature selection strategy was implemented by integrating two filter-based methods. Each algorithm was independently applied to rank features on the training set. The top 100 to 500 features (in increments of 100) from each were merged to generate multiple integrated feature sets.
 
 **Minimum Redundancy Maximum Relevance (mRMR) Algorithm** (Ding and Peng, 2005)
 
