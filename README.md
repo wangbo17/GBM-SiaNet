@@ -1,4 +1,4 @@
-<img width="2809" height="1870" alt="GBM-SiaNet_logo" src="https://github.com/user-attachments/assets/1cab93c4-f74c-46a3-b988-814f55556646" />
+<p align="center"><img height="800" alt="GBM-SiaNet_logo" src="https://github.com/user-attachments/assets/1cab93c4-f74c-46a3-b988-814f55556646" /></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/R-4.3.2+-blue" />
