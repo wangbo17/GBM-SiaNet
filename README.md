@@ -10,7 +10,7 @@
 
 ## 📖 Overview
 
-**GBM-SiaNet** is an interpretable machine learning classifier based on a Siamese neural network, designed to identify key genes associated with therapy resistance in glioblastoma (GBM) by distinguishing between primary and recurrent tumours using longitudinal gene expression data. This MSc Research Project (60 credits) in precision medicine and bioinformatics was independently designed and implemented.
+**GBM-SiaNet** is an interpretable machine learning classifier based on a Siamese neural network, designed to identify key genes associated with therapy resistance in glioblastoma (GBM) by distinguishing between primary and recurrent tumours using longitudinal gene expression data. This MSc Research Project in precision medicine and bioinformatics was independently designed and implemented.
 
 ## 🧠 Background
 
